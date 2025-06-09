@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant: Advanced Tool Selection Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .mode-toggle {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .mode-toggle:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .toolbox {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .toolbox h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .tool-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .tool-card h4 {
+            color: #007bff;
+            margin-bottom: 8px;
+        }
+
+        .tool-card p {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .tool-schema {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .tool-schema.show {
+            display: block;
+        }
+
+        .schema-toggle {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .game-area {
+            padding: 30px;
+        }
+
+        .scenario {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .scenario h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .user-message {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        .thinking-bubble {
+            background: #f3e5f5;
+            border: 2px dashed #9c27b0;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .thinking-bubble::before {
+            content: "🤔";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: white;
+            padding: 0 10px;
+            font-size: 1.5rem;
+        }
+
+        .thinking-content {
+            margin-top: 10px;
+            font-style: italic;
+            color: #6a1b9a;
+        }
+
+        .choices {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .choice-btn {
+            padding: 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .choice-btn:hover {
+            border-color: #007bff;
+            box-shadow: 0 5px 15px rgba(0,123,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .choice-btn.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .choice-btn.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .choice-btn.neutral {
+            background: #e2e3e5;
+            border-color: #6c757d;
+            color: #383d41;
+        }
+
+        .technical-details {
+            background: #f8f9fa;
+            border: 2px solid #6c757d;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .technical-details.show {
+            display: block;
+        }
+
+        .tech-section {
+            margin-bottom: 20px;
+        }
+
+        .tech-section h4 {
+            color: #495057;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .json-display {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+
+        .json-key {
+            color: #81c784;
+        }
+
+        .json-string {
+            color: #ffb74d;
+        }
+
+        .json-number {
+            color: #64b5f6;
+        }
+
+        .json-boolean {
+            color: #e57373;
+        }
+
+        .execution-flow {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .flow-step {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .flow-step h5 {
+            color: #007bff;
+            margin-bottom: 8px;
+        }
+
+        .flow-step.active {
+            border-left-color: #28a745;
+            background: #f8fff9;
+        }
+
+        .feedback {
+            background: #e8f5e8;
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.wrong {
+            background: #fdeaea;
+            border-color: #dc3545;
+        }
+
+        .score-board {
+            background: #343a40;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .score-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .score-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffc107;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40,167,69,0.3);
+        }
+
+        .next-btn.show {
+            display: inline-block;
+        }
+
+        .game-complete {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .game-complete.show {
+            display: block;
+        }
+
+        .celebration {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .choices {
+                grid-template-columns: 1fr;
+            }
+            
+            .score-board {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .execution-flow {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🤖 AI Assistant Training</h1>
+            <p>Learn LLM tool selection mechanics: schemas, JSON calls & execution!</p>
+            <button class="mode-toggle" onclick="toggleTechnicalMode()">
+                <span id="mode-text">🔧 Show Technical Details</span>
+            </button>
+        </div>
+
+        <div class="toolbox">
+            <h3>📚 Available Tools & Their Schemas</h3>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <h4>🌤️ Weather Tool</h4>
+                    <p>Gets current weather, temperature, and conditions for any city worldwide</p>
+                    <button class="schema-toggle" onclick="toggleSchema('weather')">View Schema</button>
+                    <div class="tool-schema" id="weather-schema">
+{
+  "name": "get_weather",
+  "description": "Get current weather for a location",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "location": {
+        "type": "string",
+        "description": "City name, e.g. 'San Francisco, CA'"
+      },
+      "unit": {
+        "type": "string",
+        "enum": ["celsius", "fahrenheit"],
+        "description": "Temperature unit"
+      }
+    },
+    "required": ["location"]
+  }
+}
+                    </div>
+                </div>
+                <div class="tool-card">
+                    <h4>🧮 Calculator Tool</h4>
+                    <p>Performs mathematical calculations, percentages, and number crunching</p>
+                    <button class="schema-toggle" onclick="toggleSchema('calculator')">View Schema</button>
+                    <div class="tool-schema" id="calculator-schema">
+{
+  "name": "calculate",
+  "description": "Perform mathematical calculations",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "expression": {
+        "type": "string",
+        "description": "Math expression like '67.50 * 0.15'"
+      },
+      "operation": {
+        "type": "string",
+        "description": "Type of calculation being performed"
+      }
+    },
+    "required": ["expression"]
+  }
+}
+                    </div>
+                </div>
+                <div class="tool-card">
+                    <h4>👤 Customer Lookup</h4>
+                    <p>Finds customer account information, order history, and details</p>
+                    <button class="schema-toggle" onclick="toggleSchema('customer')">View Schema</button>
+                    <div class="tool-schema" id="customer-schema">
+{
+  "name": "lookup_customer",
+  "description": "Look up customer account information",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "customer_id": {
+        "type": "string",
+        "description": "Customer ID or email address"
+      },
+      "lookup_type": {
+        "type": "string",
+        "enum": ["balance", "orders", "profile"],
+        "description": "Type of information to retrieve"
+      }
+    },
+    "required": ["customer_id", "lookup_type"]
+  }
+}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <div class="scenario">
+                <h3>🎯 Scenario <span id="current-scenario">1</span> of <span id="total-scenarios">8</span></h3>
+                <p>You are an AI assistant. Analyze the request and decide the best approach.</p>
+            </div>
+
+            <div class="user-message" id="user-message">
+                Loading scenario...
+            </div>
+
+            <div class="thinking-bubble">
+                <strong>LLM Analysis Process:</strong>
+                <div class="thinking-content" id="thinking-content">
+                    Analyzing user request...
+                </div>
+            </div>
+
+            <div class="choices" id="choices">
+                <!-- Choices will be populated by JavaScript -->
+            </div>
+
+            <div class="technical-details" id="technical-details">
+                <div class="tech-section">
+                    <h4>🔧 LLM Decision Output</h4>
+                    <div class="json-display" id="llm-output">
+                        Select a choice to see the LLM's structured output...
+                    </div>
+                </div>
+
+                <div class="tech-section">
+                    <h4>⚡ Tool Execution Flow</h4>
+                    <div class="execution-flow" id="execution-flow">
+                        <!-- Flow steps will be populated -->
+                    </div>
+                </div>
+
+                <div class="tech-section" id="tool-result-section" style="display: none;">
+                    <h4>📤 Tool Execution Result</h4>
+                    <div class="json-display" id="tool-result">
+                        <!-- Tool result will be populated -->
+                    </div>
+                </div>
+
+                <div class="tech-section" id="final-response-section" style="display: none;">
+                    <h4>💬 Final LLM Response</h4>
+                    <div class="json-display" id="final-response">
+                        <!-- Final response will be populated -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="feedback" id="feedback">
+                <!-- Feedback will be populated by JavaScript -->
+            </div>
+
+            <div style="text-align: center;">
+                <button class="next-btn" id="next-btn" onclick="nextScenario()">
+                    Next Scenario →
+                </button>
+            </div>
+
+            <div class="game-complete" id="game-complete">
+                <div class="celebration">🎉</div>
+                <h2>Congratulations!</h2>
+                <p>You've mastered LLM tool selection mechanics!</p>
+                <button class="next-btn show" onclick="restartGame()">Play Again</button>
+            </div>
+        </div>
+
+        <div class="score-board">
+            <div class="score-item">
+                <div class="score-number" id="score">0</div>
+                <div class="score-label">Score</div>
+            </div>
+            <div class="score-item">
+                <div class="score-number" id="streak">0</div>
+                <div class="score-label">Streak</div>
+            </div>
+            <div class="score-item">
+                <div class="score-number" id="accuracy">0%</div>
+                <div class="score-label">Accuracy</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let technicalMode = false;
+
+        // Tool definitions with execution logic
+        const toolDefinitions = {
+            weather: {
+                name: "get_weather",
+                execute: (params) => ({
+                    location: params.location,
+                    temperature: 72,
+                    condition: "sunny",
+                    humidity: 45,
+                    wind_speed: 8,
+                    unit: params.unit || "fahrenheit"
+                })
+            },
+            calculator: {
+                name: "calculate", 
+                execute: (params) => {
+                    // Simple eval for demo (don't use in production!)
+                    try {
+                        const result = eval(params.expression);
+                        return {
+                            expression: params.expression,
+                            result: result,
+                            operation: params.operation || "calculation"
+                        };
+                    } catch (e) {
+                        return { error: "Invalid expression" };
+                    }
+                }
+            },
+            customer: {
+                name: "lookup_customer",
+                execute: (params) => ({
+                    customer_id: params.customer_id,
+                    lookup_type: params.lookup_type,
+                    result: {
+                        balance: params.lookup_type === "balance" ? "$1,250.75" : null,
+                        name: "John Smith",
+                        status: "active"
+                    }
+                })
+            }
+        };
+
+        // Game scenarios with technical details
+        const scenarios = [
+            {
+                message: "What's the weather like in San Francisco today?",
+                thinking: "The user wants current weather information for a specific location. This requires real-time external data that I don't have built-in knowledge of.",
+                correct: "weather",
+                choices: [
+                    { 
+                        id: "weather", 
+                        text: "🌤️ Use Weather Tool", 
+                        description: "Get current weather for San Francisco",
+                        toolCall: {
+                            name: "get_weather",
+                            parameters: {
+                                location: "San Francisco, CA",
+                                unit: "fahrenheit"
+                            }
+                        }
+                    },
+                    { 
+                        id: "direct", 
+                        text: "💬 Respond Directly", 
+                        description: "Use my general knowledge about SF weather",
+                        toolCall: null
+                    },
+                    { 
+                        id: "calculator", 
+                        text: "🧮 Use Calculator", 
+                        description: "This doesn't involve math",
+                        toolCall: null
+                    }
+                ],
+                feedback: {
+                    correct: "Perfect! Weather information changes constantly and requires real-time data. The weather tool is exactly what we need here.",
+                    incorrect: "Not quite! This question needs current, real-time weather data that only the weather tool can provide."
+                }
+            },
+            {
+                message: "Hi there! How are you doing today?",
+                thinking: "This is a friendly greeting and casual conversation. No external data or special computation needed - just a warm, conversational response.",
+                correct: "direct",
+                choices: [
+                    { 
+                        id: "direct", 
+                        text: "💬 Respond Directly", 
+                        description: "Friendly conversation, no tools needed",
+                        toolCall: null
+                    },
+                    { 
+                        id: "weather", 
+                        text: "🌤️ Use Weather Tool", 
+                        description: "Check weather to answer how I'm doing",
+                        toolCall: {
+                            name: "get_weather",
+                            parameters: {
+                                location: "Unknown location"
+                            }
+                        }
+                    },
+                    { 
+                        id: "customer", 
+                        text: "👤 Use Customer Lookup", 
+                        description: "Look up who this person is",
+                        toolCall: {
+                            name: "lookup_customer",
+                            parameters: {
+                                customer_id: "unknown",
+                                lookup_type: "profile"
+                            }
+                        }
+                    }
+                ],
+                feedback: {
+                    correct: "Excellent! Simple greetings and casual conversation don't require any tools - just a friendly, direct response.",
+                    incorrect: "This is just friendly conversation! No tools needed - a simple, warm response is perfect here."
+                }
+            },
+            {
+                message: "Calculate 15% tip on a $67.50 restaurant bill",
+                thinking: "This requires mathematical calculation of a percentage. While it's possible to do mentally, the calculator tool will give precise results.",
+                correct: "calculator",
+                choices: [
+                    { 
+                        id: "calculator", 
+                        text: "🧮 Use Calculator", 
+                        description: "Calculate: 67.50 × 0.15",
+                        toolCall: {
+                            name: "calculate",
+                            parameters: {
+                                expression: "67.50 * 0.15",
+                                operation: "tip calculation"
+                            }
+                        }
+                    },
+                    { 
+                        id: "direct", 
+                        text: "💬 Respond Directly", 
+                        description: "Estimate the tip amount mentally",
+                        toolCall: null
+                    },
+                    { 
+                        id: "customer", 
+                        text: "👤 Use Customer Lookup", 
+                        description: "Check their dining preferences",
+                        toolCall: {
+                            name: "lookup_customer",
+                            parameters: {
+                                customer_id: "unknown",
+                                lookup_type: "profile"
+                            }
+                        }
+                    }
+                ],
+                feedback: {
+                    correct: "Great choice! For precise calculations, especially with decimal amounts, the calculator tool ensures accuracy.",
+                    incorrect: "While you might estimate this mentally, the calculator tool provides the most accurate result for financial calculations."
+                }
+            },
+            {
+                message: "What's the capital of France?",
+                thinking: "This is basic geographical knowledge that I have built-in. No external data or computation needed - this is static, well-known information.",
+                correct: "direct",
+                choices: [
+                    { 
+                        id: "direct", 
+                        text: "💬 Respond Directly", 
+                        description: "This is basic geography knowledge",
+                        toolCall: null
+                    },
+                    { 
+                        id: "weather", 
+                        text: "🌤️ Use Weather Tool", 
+                        description: "Check weather in French cities",
+                        toolCall: {
+                            name: "get_weather",
+                            parameters: {
+                                location: "France"
+                            }
+                        }
+                    },
+                    { 
+                        id: "customer", 
+                        text: "👤 Use Customer Lookup", 
+                        description: "Look up geography information",
+                        toolCall: {
+                            name: "lookup_customer",
+                            parameters: {
+                                customer_id: "geography",
+                                lookup_type: "profile"
+                            }
+                        }
+                    }
+                ],
+                feedback: {
+                    correct: "Perfect! This is basic, static knowledge that doesn't change. No tools needed for well-established facts.",
+                    incorrect: "This is basic geography knowledge that doesn't require any tools. The capital of France is static information!"
+                }
+            },
+            {
+                message: "Can you look up my account balance?",
+                thinking: "This requires accessing specific customer account information that's personal and stored in external systems. I need the customer lookup tool.",
+                correct: "customer",
+                choices: [
+                    { 
+                        id: "customer", 
+                        text: "👤 Use Customer Lookup", 
+                        description: "Access account information",
+                        toolCall: {
+                            name: "lookup_customer",
+                            parameters: {
+                                customer_id: "user_session_id",
+                                lookup_type: "balance"
+                            }
+                        }
+                    },
+                    { 
+                        id: "direct", 
+                        text: "💬 Respond Directly", 
+                        description: "Explain I can't access accounts",
+                        toolCall: null
+                    },
+                    { 
+                        id: "calculator", 
+                        text: "🧮 Use Calculator", 
+                        description: "Calculate account balance",
+                        toolCall: {
+                            name: "calculate",
+                            parameters: {
+                                expression: "account_balance",
+                                operation: "balance lookup"
+                            }
+                        }
+                    }
+                ],
+                feedback: {
+                    correct: "Excellent! Account information is personal data that requires the customer lookup tool to access securely.",
+                    incorrect: "Account balances are personal data stored in external systems - we need the customer lookup tool to access this information."
+                }
+            }
+        ];
+
+        // Game state
+        let currentScenario = 0;
+        let score = 0;
+        let streak = 0;
+        let totalAnswered = 0;
+
+        function toggleTechnicalMode() {
+            technicalMode = !technicalMode;
+            const modeText = document.getElementById('mode-text');
+            const techDetails = document.getElementById('technical-details');
+            
+            if (technicalMode) {
+                modeText.textContent = '👁️ Hide Technical Details';
+                techDetails.classList.add('show');
+            } else {
+                modeText.textContent = '🔧 Show Technical Details';
+                techDetails.classList.remove('show');
+            }
+        }
+
+        function toggleSchema(toolType) {
+            const schema = document.getElementById(`${toolType}-schema`);
+            schema.classList.toggle('show');
+        }
+
+        function formatJSON(obj) {
+            return JSON.stringify(obj, null, 2)
+                .replace(/"([^"]+)":/g, '<span class="json-key">"$1":</span>')
+                .replace(/: "([^"]+)"/g, ': <span class="json-string">"$1"</span>')
+                .replace(/: (\d+\.?\d*)/g, ': <span class="json-number">$1</span>')
+                .replace(/: (true|false)/g, ': <span class="json-boolean">$1</span>');
+        }
+
+        function showTechnicalDetails(choice, scenario) {
+            if (!technicalMode) return;
+
+            const llmOutput = document.getElementById('llm-output');
+            const executionFlow = document.getElementById('execution-flow');
+            const toolResultSection = document.getElementById('tool-result-section');
+            const finalResponseSection = document.getElementById('final-response-section');
+
+            if (choice.toolCall) {
+                // Show LLM tool call decision
+                const llmDecision = {
+                    role: "assistant",
+                    content: "I'll help you with that.",
+                    tool_calls: [{
+                        id: "call_" + Math.random().toString(36).substr(2, 9),
+                        type: "function",
+                        function: {
+                            name: choice.toolCall.name,
+                            arguments: JSON.stringify(choice.toolCall.parameters)
+                        }
+                    }]
+                };
+                llmOutput.innerHTML = formatJSON(llmDecision);
+
+                // Show execution flow
+                executionFlow.innerHTML = `
+                    <div class="flow-step active">
+                        <h5>1. Tool Selection</h5>
+                        <p>LLM chose: ${choice.toolCall.name}</p>
+                    </div>
+                    <div class="flow-step active">
+                        <h5>2. Parameter Extraction</h5>
+                        <p>Extracted parameters from user message</p>
+                    </div>
+                    <div class="flow-step active">
+                        <h5>3. Tool Execution</h5>
+                        <p>Calling ${choice.toolCall.name} with parameters</p>
+                    </div>
+                    <div class="flow-step active">
+                        <h5>4. Result Integration</h5>
+                        <p>Using tool result to generate response</p>
+                    </div>
+                `;
+
+                // Execute tool and show result
+                const toolType = Object.keys(toolDefinitions).find(t => 
+                    toolDefinitions[t].name === choice.toolCall.name
+                );
+                
+                if (toolType) {
+                    const result = toolDefinitions[toolType].execute(choice.toolCall.parameters);
+                    
+                    toolResultSection.style.display = 'block';
+                    document.getElementById('tool-result').innerHTML = formatJSON({
+                        tool_call_id: llmDecision.tool_calls[0].id,
+                        role: "tool",
+                        content: JSON.stringify(result)
+                    });
+
+                    // Show final response
+                    finalResponseSection.style.display = 'block';
+                    const finalResponse = generateFinalResponse(scenario.message, result, choice.toolCall.name);
+                    document.getElementById('final-response').innerHTML = formatJSON({
+                        role: "assistant",
+                        content: finalResponse
+                    });
+                }
+            } else {
+                // Direct response - no tools
+                const directResponse = {
+                    role: "assistant", 
+                    content: generateDirectResponse(scenario.message),
+                    tool_calls: null
+                };
+                llmOutput.innerHTML = formatJSON(directResponse);
+
+                executionFlow.innerHTML = `
+                    <div class="flow-step active">
+                        <h5>1. Intent Analysis</h5>
+                        <p>Analyzed user request</p>
+                    </div>
+                    <div class="flow-step active">
+                        <h5>2. Knowledge Check</h5>
+                        <p>Information available in training data</p>
+                    </div>
+                    <div class="flow-step active">
+                        <h5>3. Direct Response</h5>
+                        <p>No external tools needed</p>
+                    </div>
+                `;
+
+                toolResultSection.style.display = 'none';
+                finalResponseSection.style.display = 'none';
+            }
+        }
+
+        function generateFinalResponse(userMessage, toolResult, toolName) {
+            if (toolName === "get_weather") {
+                return `The weather in ${toolResult.location} is currently ${toolResult.temperature}°${toolResult.unit === 'celsius' ? 'C' : 'F'} and ${toolResult.condition}. Perfect conditions with ${toolResult.humidity}% humidity and ${toolResult.wind_speed} mph winds.`;
+            } else if (toolName === "calculate") {
+                return `The calculation ${toolResult.expression} equals ${toolResult.result}. So a 15% tip on $67.50 would be $${toolResult.result.toFixed(2)}.`;
+            } else if (toolName === "lookup_customer") {
+                return `I found your account information. Your current balance is ${toolResult.result.balance}. Your account status is ${toolResult.result.status}.`;
+            }
+            return "I've processed your request using the appropriate tool.";
+        }
+
+        function generateDirectResponse(userMessage) {
+            if (userMessage.includes("Hi") || userMessage.includes("How are you")) {
+                return "Hello! I'm doing well, thank you for asking. I'm here and ready to help with any questions or tasks you might have. How can I assist you today?";
+            } else if (userMessage.includes("capital of France")) {
+                return "The capital of France is Paris. It's been the capital since 987 AD and is known for its rich history, culture, and landmarks like the Eiffel Tower.";
+            }
+            return "I can help you with that based on my knowledge. Let me know if you need any clarification!";
+        }
+
+        // Initialize game
+        function initGame() {
+            loadScenario();
+        }
+
+        function loadScenario() {
+            if (currentScenario >= scenarios.length) {
+                endGame();
+                return;
+            }
+
+            const scenario = scenarios[currentScenario];
+            
+            // Update UI
+            document.getElementById('current-scenario').textContent = currentScenario + 1;
+            document.getElementById('total-scenarios').textContent = scenarios.length;
+            document.getElementById('user-message').textContent = `"${scenario.message}"`;
+            document.getElementById('thinking-content').textContent = scenario.thinking;
+            
+            // Clear previous state
+            document.getElementById('feedback').classList.remove('show', 'wrong');
+            document.getElementById('next-btn').classList.remove('show');
+            document.getElementById('llm-output').textContent = 'Select a choice to see the LLM\'s structured output...';
+            document.getElementById('tool-result-section').style.display = 'none';
+            document.getElementById('final-response-section').style.display = 'none';
+            
+            // Load choices
+            const choicesContainer = document.getElementById('choices');
+            choicesContainer.innerHTML = '';
+            
+            scenario.choices.forEach(choice => {
+                const button = document.createElement('div');
+                button.className = 'choice-btn';
+                button.innerHTML = `
+                    <strong>${choice.text}</strong>
+                    <div style="margin-top: 8px; font-size: 0.9rem; opacity: 0.8;">
+                        ${choice.description}
+                    </div>
+                `;
+                button.onclick = () => selectChoice(choice.id, button, choice, scenario);
+                choicesContainer.appendChild(button);
+            });
+        }
+
+        function selectChoice(choiceId, buttonElement, choice, scenario) {
+            const isCorrect = choiceId === scenario.correct;
+            
+            // Disable all buttons and show results
+            const allButtons = document.querySelectorAll('.choice-btn');
+            allButtons.forEach(btn => {
+                btn.style.pointerEvents = 'none';
+                if (btn === buttonElement) {
+                    btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+                } else {
+                    btn.classList.add('neutral');
+                }
+            });
+            
+            // Show correct answer if wrong
+            if (!isCorrect) {
+                allButtons.forEach(btn => {
+                    const choiceText = btn.querySelector('strong').textContent;
+                    const correctChoice = scenario.choices.find(c => c.id === scenario.correct);
+                    if (choiceText === correctChoice.text) {
+                        btn.classList.remove('neutral');
+                        btn.classList.add('correct');
+                        btn.style.border = '3px solid #28a745';
+                    }
+                });
+            }
+            
+            // Show technical details
+            showTechnicalDetails(choice, scenario);
+            
+            // Update score
+            totalAnswered++;
+            if (isCorrect) {
+                score += 100;
+                streak++;
+            } else {
+                streak = 0;
+            }
+            
+            updateScoreBoard();
+            showFeedback(isCorrect, scenario);
+        }
+
+        function showFeedback(isCorrect, scenario) {
+            const feedback = document.getElementById('feedback');
+            
+            feedback.innerHTML = `
+                <h4>${isCorrect ? '🎉 Correct!' : '❌ Not quite right'}</h4>
+                <p>${isCorrect ? scenario.feedback.correct : scenario.feedback.incorrect}</p>
+                ${technicalMode ? '<p><strong>💡 Technical Insight:</strong> Check the technical details above to see exactly how the LLM processes this decision, including the JSON structures and execution flow!</p>' : ''}
+            `;
+            
+            feedback.className = `feedback show ${isCorrect ? '' : 'wrong'}`;
+            document.getElementById('next-btn').classList.add('show');
+        }
+
+        function nextScenario() {
+            currentScenario++;
+            loadScenario();
+        }
+
+        function updateScoreBoard() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+            document.getElementById('accuracy').textContent = 
+                totalAnswered > 0 ? Math.round((score / (totalAnswered * 100)) * 100) + '%' : '0%';
+        }
+
+        function endGame() {
+            document.querySelector('.game-area').style.display = 'none';
+            document.getElementById('game-complete').classList.add('show');
+            
+            // Add final score to completion message
+            const accuracy = totalAnswered > 0 ? Math.round((score / (totalAnswered * 100)) * 100) : 0;
+            document.getElementById('game-complete').innerHTML = `
+                <div class="celebration">🎉</div>
+                <h2>Congratulations!</h2>
+                <p>You've mastered LLM tool selection mechanics!</p>
+                <p><strong>Final Score: ${score} points (${accuracy}% accuracy)</strong></p>
+                <p>${accuracy >= 80 ? "Outstanding! You understand both the concepts and technical implementation!" : accuracy >= 60 ? "Great job! You're getting the hang of tool selection!" : "Keep practicing - the technical details will become clearer!"}</p>
+                <button class="next-btn show" onclick="restartGame()">Play Again</button>
+            `;
+        }
+
+        function restartGame() {
+            currentScenario = 0;
+            score = 0;
+            streak = 0;
+            totalAnswered = 0;
+            
+            document.querySelector('.game-area').style.display = 'block';
+            document.getElementById('game-complete').classList.remove('show');
+            
+            updateScoreBoard();
+            loadScenario();
+        }
+
+        // Start the game
+        initGame();
+    </script>
+</body>
+</html>
